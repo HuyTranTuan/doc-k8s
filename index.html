@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="vi" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tài Liệu Tổng Hợp Kubernetes Từ A-Z</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%232563eb'%3E%3Cpath d='M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5'/%3E%3C/svg%3E" type="image/svg+xml">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        code, pre { font-family: 'Fira Code', monospace; }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        .nav-link.active { color: #2563eb; font-weight: 600; border-left-color: #2563eb; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased selection:bg-blue-200">
+
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-40 bg-opacity-90 backdrop-blur-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <svg class="w-8 h-8 text-blue-600" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                </svg>
+                <h1 class="text-xl font-bold tracking-tight text-slate-900">K8s Cheat Sheet</h1>
+            </div>
+            <div class="text-sm text-slate-500 hidden sm:block">Học Kubernetes Tiếng Việt Full</div>
+        </div>
+    </header>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col lg:flex-row gap-8">
+        
+        <aside class="w-full lg:w-64 flex-shrink-0 hidden lg:block">
+            <nav class="sticky top-24 flex flex-col gap-1 border-l-2 border-slate-100 pl-4">
+                <a href="#overview" class="nav-link block py-2 px-3 text-sm text-slate-600 hover:text-blue-600 hover:bg-slate-100 rounded transition-colors active">Bức Tranh Tổng Thể</a>
+                <a href="#basic" class="nav-link block py-2 px-3 text-sm text-slate-600 hover:text-blue-600 hover:bg-slate-100 rounded transition-colors">1. Lệnh Cơ Bản (Bài 1-20)</a>
+                <a href="#yaml-guide" class="nav-link block py-2 px-3 text-sm text-slate-600 hover:text-blue-600 hover:bg-slate-100 rounded transition-colors">2. Cấu Trúc File YAML</a>
+                <a href="#advanced" class="nav-link block py-2 px-3 text-sm text-slate-600 hover:text-blue-600 hover:bg-slate-100 rounded transition-colors">3. Lệnh Nâng Cao (Bài 21-40)</a>
+                <a href="#toolchain" class="nav-link block py-2 px-3 text-sm text-slate-600 hover:text-blue-600 hover:bg-slate-100 rounded transition-colors">4. Toolchain Cốt Lõi</a>
+                <a href="#pro-tools" class="nav-link block py-2 px-3 text-sm text-slate-600 hover:text-blue-600 hover:bg-slate-100 rounded transition-colors">5. Đồ Nghề DevOps (Pro)</a>
+                <a href="#glossary" class="nav-link block py-2 px-3 text-sm text-slate-600 hover:text-blue-600 hover:bg-slate-100 rounded transition-colors">6. Từ Điển Thuật Ngữ K8s</a>
+            </nav>
+        </aside>
+
+        <main class="flex-1 max-w-4xl min-w-0">
+            
+            <!-- SECTION: Overview -->
+            <section id="overview" class="mb-16 scroll-mt-24">
+                <h2 class="text-3xl font-bold mb-6 text-slate-900">Bức Tranh Tổng Thể Kubernetes</h2>
+                <p class="text-slate-600 mb-6 leading-relaxed">
+                    Trước khi đi sâu vào các câu lệnh, hãy nhìn vào bức tranh kiến trúc tổng thể của một cụm Kubernetes (Cluster). 
+                    Nó hoạt động giống như một thành phố thu nhỏ với bộ phận điều hành (Master Node) và các công xưởng sản xuất (Worker Nodes).
+                </p>
+                <div class="bg-white p-2 rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                    <img src="./54dd59e4-2fe0-4d6d-975f-f55ea027f58a.jpg" alt="Kubernetes Architecture Diagram" class="w-full h-auto rounded-xl">
+                </div>
+
+                <div class="mt-12">
+                    <h3 class="text-2xl font-bold mb-4 text-slate-900 flex items-center gap-2">
+                        <span class="text-blue-500">🗺️</span> Kiến Trúc Toàn Cảnh (Từ Local đến Cloud)
+                    </h3>
+                    <p class="text-slate-600 mb-6 leading-relaxed">
+                        Dưới đây là sơ đồ khối bao quát trọn vẹn mọi ngõ ngách trong hệ sinh thái Kubernetes, từ lúc lập trình viên đóng gói ứng dụng trên máy tính cá nhân cho đến khi vận hành trên Cloud (AWS EKS) và hệ thống giám sát.
+                    </p>
+                    <div class="bg-white p-2 rounded-2xl shadow-sm border border-slate-200 overflow-hidden mb-8">
+                        <img src="./Gemini_Generated_Image_d62zpnd62zpnd62z.png" alt="Kubernetes Blueprint Diagram" class="w-full h-auto rounded-xl border border-slate-100">
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="bg-slate-50 border border-slate-200 p-5 rounded-xl hover:shadow-md transition-shadow">
+                            <h4 class="font-bold text-slate-800 mb-2 text-lg text-blue-700">1. Khu Vực Local & Phát Triển</h4>
+                            <p class="text-sm text-slate-600 leading-relaxed">Nơi bạn đóng gói code (<code>Docker</code>), chạy thử nghiệm nội bộ (<code>Minikube</code>) và sử dụng các công cụ tối ưu hóa tốc độ làm việc hàng ngày (<code>kubectx</code> & <code>kubens</code>).</p>
+                        </div>
+                        <div class="bg-slate-50 border border-slate-200 p-5 rounded-xl hover:shadow-md transition-shadow">
+                            <h4 class="font-bold text-slate-800 mb-2 text-lg text-indigo-700">2. Công Cụ Đóng Gói & Triển Khai</h4>
+                            <p class="text-sm text-slate-600 leading-relaxed">Nơi "nhào nặn" các file cấu hình phức tạp (<code>YAML</code> & <code>Kustomize</code>), đóng gói ứng dụng quy mô lớn (<code>Helm Chart</code>), và sử dụng câu lệnh để chuyển tiếp, tự động dựng hệ thống lên Cloud (<code>AWS CLI</code> & <code>eksctl</code>).</p>
+                        </div>
+                        <div class="bg-slate-50 border border-slate-200 p-5 rounded-xl hover:shadow-md transition-shadow">
+                            <h4 class="font-bold text-slate-800 mb-2 text-lg text-purple-700">3. Cụm K8s trên Cloud (AWS EKS)</h4>
+                            <p class="text-sm text-slate-600 leading-relaxed">Nơi chứa toàn bộ "bộ não" <strong>Control Plane (Master Node)</strong> và hệ thống các máy chủ <strong>Worker Node</strong>. Tại đây, bạn sẽ quản lý sự phân cấp của từng loại quân đoàn (<code>Deployment, StatefulSet, DaemonSet, Job</code>) kết nối với hệ thống Mạng lưới (<code>Service, Ingress</code>), phân quyền, và Ổ cứng lưu trữ (<code>PV/PVC</code>).</p>
+                        </div>
+                        <div class="bg-slate-50 border border-slate-200 p-5 rounded-xl hover:shadow-md transition-shadow">
+                            <h4 class="font-bold text-slate-800 mb-2 text-lg text-emerald-700">4. Giám Sát & Quản Trị</h4>
+                            <p class="text-sm text-slate-600 leading-relaxed">Các "vũ khí" quan sát, quản lý tối cao dành cho admin như <code>K9s</code> (giao diện terminal UI), <code>Prometheus & Grafana</code> (thu thập và vẽ biểu đồ đo lường), và các lệnh kiểm tra hiệu năng hệ thống trực tiếp (<code>kubectl top</code>).</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION: Basic Commands -->
+            <section id="basic" class="mb-16 scroll-mt-24">
+                <div class="flex items-center gap-3 mb-8 pb-4 border-b border-slate-200">
+                    <span class="bg-blue-100 text-blue-700 font-bold px-3 py-1 rounded text-sm">Phần 1</span>
+                    <h2 class="text-2xl font-bold text-slate-900">Lệnh Cơ Bản (Biết bơi)</h2>
+                </div>
+
+                <!-- Group 1 -->
+                <div class="mb-8">
+                    <h3 class="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
+                        <span class="text-blue-500">#</span> Nhóm 1: "Khám bệnh" và Tương tác Pod
+                    </h3>
+                    <div class="space-y-4">
+                        <div class="bg-white border border-slate-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+                            <div class="bg-slate-800 px-4 py-3 flex justify-between items-center group relative cursor-pointer" onclick="copyCode(this)">
+                                <code class="text-green-400 text-sm">kubectl get nodes</code>
+                                <span class="text-xs text-slate-400 bg-slate-700 px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">Copy</span>
+                            </div>
+                            <div class="p-4 bg-slate-50 text-sm text-slate-700"><span class="mr-2">👉</span> Xem danh sách các máy chủ (Worker Node) trong hệ thống xem có máy nào đang bị sập không.</div>
+                        </div>
+
+                        <div class="bg-white border border-slate-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+                            <div class="bg-slate-800 px-4 py-3 flex justify-between items-center group relative cursor-pointer" onclick="copyCode(this)">
+                                <code class="text-green-400 text-sm">kubectl get pods [-o wide]</code>
+                                <span class="text-xs text-slate-400 bg-slate-700 px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">Copy</span>
+                            </div>
+                            <div class="p-4 bg-slate-50 text-sm text-slate-700"><span class="mr-2">👉</span> Xem danh sách các Pod đang chạy. Thêm <code>-o wide</code> để xem Pod nằm ở Node nào và có IP là gì.</div>
+                        </div>
+
+                        <div class="bg-white border border-slate-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+                            <div class="bg-slate-800 px-4 py-3 flex justify-between items-center group relative cursor-pointer" onclick="copyCode(this)">
+                                <code class="text-green-400 text-sm">kubectl describe pod &lt;tên-pod&gt;</code>
+                                <span class="text-xs text-slate-400 bg-slate-700 px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">Copy</span>
+                            </div>
+                            <div class="p-4 bg-slate-50 text-sm text-slate-700"><span class="mr-2">👉</span> Xem chi tiết "tiểu sử" của một Pod từ lúc sinh ra. Đặc biệt quan tâm phần <strong>Events</strong> khi có lỗi.</div>
+                        </div>
+
+                        <div class="bg-white border border-slate-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+                            <div class="bg-slate-800 px-4 py-3 flex justify-between items-center group relative cursor-pointer" onclick="copyCode(this)">
+                                <code class="text-green-400 text-sm">kubectl logs &lt;tên-pod&gt;</code>
+                                <span class="text-xs text-slate-400 bg-slate-700 px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">Copy</span>
+                            </div>
+                            <div class="p-4 bg-slate-50 text-sm text-slate-700"><span class="mr-2">👉</span> Xem log (những gì ứng dụng in ra màn hình) của Container bên trong Pod.</div>
+                        </div>
+
+                        <div class="bg-white border border-slate-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+                            <div class="bg-slate-800 px-4 py-3 flex justify-between items-center group relative cursor-pointer" onclick="copyCode(this)">
+                                <code class="text-green-400 text-sm">kubectl exec -it &lt;tên-pod&gt; -- /bin/sh</code>
+                                <span class="text-xs text-slate-400 bg-slate-700 px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">Copy</span>
+                            </div>
+                            <div class="p-4 bg-slate-50 text-sm text-slate-700"><span class="mr-2">👉</span> "Chui" hẳn vào bên trong Pod đang chạy để gõ lệnh trực tiếp.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Group 2 -->
+                <div class="mb-8">
+                    <h3 class="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
+                        <span class="text-blue-500">#</span> Nhóm 2: Triển khai bằng YAML (Declarative)
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-white border border-slate-200 rounded-lg overflow-hidden shadow-sm">
+                            <div class="bg-slate-800 px-4 py-3 cursor-pointer" onclick="copyCode(this)">
+                                <code class="text-green-400 text-sm">kubectl apply -f &lt;file.yaml&gt;</code>
+                            </div>
+                            <div class="p-4 bg-slate-50 text-sm text-slate-700">Tạo ra hoặc cập nhật mọi tài nguyên định nghĩa trong file YAML.</div>
+                        </div>
+                        <div class="bg-white border border-slate-200 rounded-lg overflow-hidden shadow-sm">
+                            <div class="bg-slate-800 px-4 py-3 cursor-pointer" onclick="copyCode(this)">
+                                <code class="text-green-400 text-sm">kubectl delete -f &lt;file.yaml&gt;</code>
+                            </div>
+                            <div class="p-4 bg-slate-50 text-sm text-slate-700">Dọn dẹp, xóa sạch mọi thứ đã được tạo ra từ file YAML đó.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Group 3 -->
+                <div class="mb-8">
+                    <h3 class="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
+                        <span class="text-blue-500">#</span> Nhóm 3: Quản lý Phiên bản (Deployment)
+                    </h3>
+                    <div class="space-y-3 border-l-4 border-slate-300 pl-4 ml-2">
+                        <div class="cursor-pointer" onclick="copyCode(this)">
+                            <code class="bg-slate-100 text-pink-600 px-2 py-1 rounded text-sm block md:inline-block w-full md:w-auto mb-1">kubectl get deploy</code>
+                            <span class="text-sm text-slate-600 block md:inline-block md:ml-2">Liệt kê Deployment, xem số lượng Pod Desired vs Ready.</span>
+                        </div>
+                        <div class="cursor-pointer" onclick="copyCode(this)">
+                            <code class="bg-slate-100 text-pink-600 px-2 py-1 rounded text-sm block md:inline-block w-full md:w-auto mb-1">kubectl set image deploy/&lt;name&gt; &lt;container&gt;=&lt;img:v2&gt;</code>
+                            <span class="text-sm text-slate-600 block md:inline-block md:ml-2">Ép cập nhật ứng dụng lên phiên bản mới.</span>
+                        </div>
+                        <div class="cursor-pointer" onclick="copyCode(this)">
+                            <code class="bg-slate-100 text-pink-600 px-2 py-1 rounded text-sm block md:inline-block w-full md:w-auto mb-1">kubectl rollout status deploy/&lt;name&gt;</code>
+                            <span class="text-sm text-slate-600 block md:inline-block md:ml-2">Xem tiến trình cập nhật cuốn chiếu (Rolling update).</span>
+                        </div>
+                        <div class="cursor-pointer" onclick="copyCode(this)">
+                            <code class="bg-slate-100 text-pink-600 px-2 py-1 rounded text-sm block md:inline-block w-full md:w-auto mb-1">kubectl rollout undo deploy/&lt;name&gt;</code>
+                            <span class="text-sm text-red-600 font-medium block md:inline-block md:ml-2">Lệnh cứu mạng! Rollback về bản cũ nếu lỗi.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Group 4 & 5 Combined for brevity in UI -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                    <div>
+                        <h3 class="text-lg font-semibold text-slate-800 mb-3 flex items-center gap-2">
+                            <span class="text-blue-500">#</span> Nhóm 4: Mạng lưới (Service)
+                        </h3>
+                        <ul class="space-y-3 text-sm text-slate-700">
+                            <li><code class="bg-slate-100 text-pink-600 px-1 rounded cursor-pointer" onclick="copyCode(this)">kubectl get svc</code> - Xem danh sách Service (IP, Port).</li>
+                            <li><code class="bg-slate-100 text-pink-600 px-1 rounded cursor-pointer" onclick="copyCode(this)">kubectl describe svc &lt;name&gt;</code> - K.tra Endpoints.</li>
+                            <li><code class="bg-slate-100 text-pink-600 px-1 rounded cursor-pointer" onclick="copyCode(this)">kubectl port-forward svc/&lt;n&gt; 8080:80</code> - Mở đường hầm test nội bộ ra localhost.</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold text-slate-800 mb-3 flex items-center gap-2">
+                            <span class="text-blue-500">#</span> Nhóm 5: Môi trường (Namespace)
+                        </h3>
+                        <ul class="space-y-3 text-sm text-slate-700">
+                            <li><code class="bg-slate-100 text-pink-600 px-1 rounded cursor-pointer" onclick="copyCode(this)">kubectl get ns</code> - Danh sách môi trường.</li>
+                            <li><code class="bg-slate-100 text-pink-600 px-1 rounded cursor-pointer" onclick="copyCode(this)">kubectl get all -n &lt;ns&gt;</code> - Xem tất cả trong 1 NS.</li>
+                            <li><code class="bg-slate-100 text-pink-600 px-1 rounded cursor-pointer" onclick="copyCode(this)">kubectl get cm</code> - Xem ConfigMaps (Cấu hình).</li>
+                            <li><code class="bg-slate-100 text-pink-600 px-1 rounded cursor-pointer" onclick="copyCode(this)">kubectl get secret</code> - Xem Mật khẩu/Token.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="bg-amber-50 border-l-4 border-amber-400 p-4 rounded-r flex gap-3">
+                    <div class="text-amber-500 text-xl">💡</div>
+                    <div>
+                        <h4 class="font-semibold text-amber-800">Bí kíp học nhanh</h4>
+                        <p class="text-sm text-amber-700 mt-1">Bạn không cần học thuộc lòng tất cả ngay lập tức. Hãy mở Terminal lên, tự tạo 1 file YAML đơn giản (chạy 1 web Nginx chẳng hạn), dùng lệnh <code>apply -f</code>, sau đó thử <code>get pods</code>, thử xóa pod, thử xem log. Việc "gõ lệnh đến đâu, thấy kết quả đến đó" sẽ giúp bạn nhớ sâu hơn rất nhiều!</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION: YAML Guide -->
+            <section id="yaml-guide" class="mb-16 scroll-mt-24">
+                <div class="flex items-center gap-3 mb-8 pb-4 border-b border-slate-200">
+                    <span class="bg-indigo-100 text-indigo-700 font-bold px-3 py-1 rounded text-sm">Phần 2</span>
+                    <h2 class="text-2xl font-bold text-slate-900">Bí Kíp Viết File YAML (Declarative)</h2>
+                </div>
+
+                <p class="text-slate-600 mb-6 leading-relaxed">
+                    Thay vì gõ lệnh trực tiếp, Kubernetes khuyến khích bạn mô tả hệ thống mong muốn bằng file YAML. Mọi file cấu hình tài nguyên trong K8s đều bắt buộc phải có <strong>4 trường cơ bản</strong>:
+                </p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <div class="bg-white border border-slate-200 rounded-lg p-5 shadow-sm hover:shadow-md transition">
+                        <h4 class="font-bold text-slate-800 mb-2">1. apiVersion & kind</h4>
+                        <p class="text-sm text-slate-600">Định nghĩa phiên bản API và loại tài nguyên bạn muốn tạo (Pod, Deployment, Service, ConfigMap...).</p>
+                    </div>
+                    <div class="bg-white border border-slate-200 rounded-lg p-5 shadow-sm hover:shadow-md transition">
+                        <h4 class="font-bold text-slate-800 mb-2">2. metadata</h4>
+                        <p class="text-sm text-slate-600">Thông tin nhận dạng tài nguyên: <code>name</code> (bắt buộc, phải duy nhất), <code>namespace</code> (môi trường), <code>labels</code> (nhãn để phân loại).</p>
+                    </div>
+                    <div class="bg-white border border-slate-200 rounded-lg p-5 shadow-sm hover:shadow-md transition md:col-span-2">
+                        <h4 class="font-bold text-slate-800 mb-2">3. spec (Specification)</h4>
+                        <p class="text-sm text-slate-600">Phần quan trọng nhất! Mô tả trạng thái bạn mong muốn hệ thống phải duy trì: dùng Docker image nào, mở port bao nhiêu, tạo mấy bản sao (replicas), cấp bao nhiêu RAM...</p>
+                    </div>
+                </div>
+
+                <div class="space-y-8">
+                    <!-- Deployment YAML -->
+                    <div>
+                        <h3 class="text-lg font-semibold text-slate-800 mb-3 flex items-center gap-2">
+                            <span class="text-indigo-500">📄</span> Mẫu YAML cho Deployment (Ứng dụng Web)
+                        </h3>
+                        <div class="bg-slate-800 rounded-lg overflow-hidden shadow-md group relative cursor-pointer" onclick="copyCode(this)">
+                            <div class="flex justify-between items-center bg-slate-900 px-4 py-2 border-b border-slate-700">
+                                <span class="text-xs text-slate-400 font-mono">nginx-deployment.yaml</span>
+                                <span class="text-xs text-slate-400 bg-slate-700 px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">Copy</span>
+                            </div>
+                            <pre class="p-4 text-sm text-slate-300 overflow-x-auto"><code class="language-yaml">apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-web                 # Tên của Deployment
+  labels:
+    app: my-nginx
+spec:
+  replicas: 3                     # Luôn giữ 3 Pod chạy song song
+  selector:
+    matchLabels:
+      app: my-nginx               # Tìm và quản lý các Pod có nhãn này
+  template:                       # ---- BẮT ĐẦU PHẦN ĐỊNH NGHĨA POD ----
+    metadata:
+      labels:
+        app: my-nginx             # Gắn nhãn cho Pod sinh ra
+    spec:
+      containers:
+      - name: nginx-container     # Tên container
+        image: nginx:1.24         # Docker image lấy từ Docker Hub
+        ports:
+        - containerPort: 80       # Cổng mà app bên trong container đang lắng nghe</code></pre>
+                        </div>
+                    </div>
+
+                    <!-- Service YAML -->
+                    <div>
+                        <h3 class="text-lg font-semibold text-slate-800 mb-3 flex items-center gap-2">
+                            <span class="text-indigo-500">📄</span> Mẫu YAML cho Service (Mở cổng ra ngoài)
+                        </h3>
+                        <div class="bg-slate-800 rounded-lg overflow-hidden shadow-md group relative cursor-pointer" onclick="copyCode(this)">
+                            <div class="flex justify-between items-center bg-slate-900 px-4 py-2 border-b border-slate-700">
+                                <span class="text-xs text-slate-400 font-mono">nginx-service.yaml</span>
+                                <span class="text-xs text-slate-400 bg-slate-700 px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">Copy</span>
+                            </div>
+                            <pre class="p-4 text-sm text-slate-300 overflow-x-auto"><code class="language-yaml">apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-service
+spec:
+  type: NodePort                  # Mở một cổng trên máy chủ để ra internet
+  selector:
+    app: my-nginx                 # TRỌNG TÂM: Trỏ Service tới các Pod có nhãn app=my-nginx
+  ports:
+    - port: 80                    # Cổng của Service (giao tiếp nội bộ K8s)
+      targetPort: 80              # Trỏ vào cổng 80 của Container
+      nodePort: 30007             # Cổng mở ra ngoài (từ 30000 - 32767)</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION: Advanced Commands -->
+            <section id="advanced" class="mb-16 scroll-mt-24">
+                <div class="flex items-center gap-3 mb-8 pb-4 border-b border-slate-200">
+                    <span class="bg-purple-100 text-purple-700 font-bold px-3 py-1 rounded text-sm">Phần 3</span>
+                    <h2 class="text-2xl font-bold text-slate-900">Lệnh Nâng Cao (Kỹ sư vận hành)</h2>
+                </div>
+
+                <div class="grid grid-cols-1 gap-6">
+                    <!-- Advanced Cards -->
+                    <div class="bg-white border border-slate-200 p-5 rounded-xl shadow-sm">
+                        <h3 class="font-bold text-slate-800 mb-2">💾 Quản lý Ổ cứng (Storage & Volumes)</h3>
+                        <p class="text-sm text-slate-500 mb-3">Dùng để gắn ổ cứng ngoài vào Pod lưu trữ an toàn (Database).</p>
+                        <ul class="text-sm space-y-2">
+                            <li><code class="bg-slate-100 text-pink-600 px-1 cursor-pointer rounded" onclick="copyCode(this)">kubectl get sc</code> - Xem loại ổ cứng hỗ trợ (StorageClass).</li>
+                            <li><code class="bg-slate-100 text-pink-600 px-1 cursor-pointer rounded" onclick="copyCode(this)">kubectl get pv</code> - Xem mảnh ổ cứng thực tế.</li>
+                            <li><code class="bg-slate-100 text-pink-600 px-1 cursor-pointer rounded" onclick="copyCode(this)">kubectl get pvc</code> - Xem "đơn xin cấp ổ cứng" (Bound/Pending).</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-white border border-slate-200 p-5 rounded-xl shadow-sm">
+                        <h3 class="font-bold text-slate-800 mb-2">🎭 Đội quân Đặc biệt (Workloads)</h3>
+                        <ul class="text-sm space-y-2">
+                            <li><code class="bg-slate-100 text-pink-600 px-1 cursor-pointer rounded" onclick="copyCode(this)">kubectl get sts</code> - StatefulSet: Dùng riêng cho Database.</li>
+                            <li><code class="bg-slate-100 text-pink-600 px-1 cursor-pointer rounded" onclick="copyCode(this)">kubectl get ds</code> - DaemonSet: Mỗi Node 1 Pod (thu thập log).</li>
+                            <li><code class="bg-slate-100 text-pink-600 px-1 cursor-pointer rounded" onclick="copyCode(this)">kubectl get cronjob</code> - Chạy task theo lịch trình, xong tự tắt.</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-white border border-slate-200 p-5 rounded-xl shadow-sm">
+                        <h3 class="font-bold text-slate-800 mb-2">⚖️ Lập lịch & Phân quyền (Scheduling & RBAC)</h3>
+                        <ul class="text-sm space-y-2">
+                            <li><code class="bg-slate-100 text-pink-600 px-1 cursor-pointer rounded" onclick="copyCode(this)">kubectl label nodes &lt;node&gt; env=prod</code> - Dán nhãn máy chủ.</li>
+                            <li><code class="bg-slate-100 text-pink-600 px-1 cursor-pointer rounded" onclick="copyCode(this)">kubectl taint nodes &lt;node&gt; key=v:NoSchedule</code> - "Xua đuổi" Pod khỏi máy.</li>
+                            <li><code class="bg-slate-100 text-pink-600 px-1 cursor-pointer rounded" onclick="copyCode(this)">kubectl get sa</code> - Tài khoản dịch vụ.</li>
+                            <li><code class="bg-slate-100 text-pink-600 px-1 cursor-pointer rounded" onclick="copyCode(this)">kubectl auth can-i create deploy -n dev</code> - K.tra quyền hạn nhanh.</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-white border border-slate-200 p-5 rounded-xl shadow-sm">
+                        <h3 class="font-bold text-slate-800 mb-2">📦 Helm & Metrics (Chợ ứng dụng & Giám sát)</h3>
+                        <ul class="text-sm space-y-2">
+                            <li><code class="bg-slate-100 text-pink-600 px-1 cursor-pointer rounded" onclick="copyCode(this)">helm search repo &lt;app&gt;</code> - Tìm app trên chợ.</li>
+                            <li><code class="bg-slate-100 text-pink-600 px-1 cursor-pointer rounded" onclick="copyCode(this)">helm install &lt;name&gt; &lt;app&gt;</code> - Cài đặt cả cụm ứng dụng.</li>
+                            <li><code class="bg-slate-100 text-pink-600 px-1 cursor-pointer rounded" onclick="copyCode(this)">kubectl top nodes</code> - Xem % CPU/RAM của máy chủ.</li>
+                            <li><code class="bg-slate-100 text-pink-600 px-1 cursor-pointer rounded" onclick="copyCode(this)">kubectl top pods</code> - Xem chi tiết Pod đang ngốn bao nhiêu tài nguyên.</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION: Toolchain -->
+            <section id="toolchain" class="mb-16 scroll-mt-24">
+                <div class="flex items-center gap-3 mb-8 pb-4 border-b border-slate-200">
+                    <span class="bg-emerald-100 text-emerald-700 font-bold px-3 py-1 rounded text-sm">Phần 4</span>
+                    <h2 class="text-2xl font-bold text-slate-900">Toolchain Cốt Lõi (Môi trường)</h2>
+                </div>
+
+                <div class="space-y-6">
+                    <div class="flex flex-col md:flex-row gap-4 bg-white p-4 border border-slate-200 rounded-lg shadow-sm">
+                        <div class="w-full md:w-1/3">
+                            <h3 class="font-bold text-lg text-slate-800">1. Minikube</h3>
+                            <p class="text-xs text-slate-500 mt-1">Môi trường giả lập K8s trên Laptop cá nhân.</p>
+                        </div>
+                        <div class="w-full md:w-2/3 space-y-2 text-sm">
+                            <div class="flex gap-2"><code class="bg-slate-100 text-pink-600 px-1 cursor-pointer" onclick="copyCode(this)">minikube start</code> <span>Khởi động cụm.</span></div>
+                            <div class="flex gap-2"><code class="bg-slate-100 text-pink-600 px-1 cursor-pointer" onclick="copyCode(this)">minikube stop/delete</code> <span>Tắt/Xóa cụm hoàn toàn.</span></div>
+                            <div class="flex gap-2"><code class="bg-slate-100 text-pink-600 px-1 cursor-pointer" onclick="copyCode(this)">minikube dashboard</code> <span>Mở giao diện Web quản lý.</span></div>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col md:flex-row gap-4 bg-white p-4 border border-slate-200 rounded-lg shadow-sm">
+                        <div class="w-full md:w-1/3">
+                            <h3 class="font-bold text-lg text-slate-800">2. Docker</h3>
+                            <p class="text-xs text-slate-500 mt-1">Đóng gói mã nguồn thành Image trước khi chạy K8s.</p>
+                        </div>
+                        <div class="w-full md:w-2/3 space-y-2 text-sm">
+                            <div class="flex gap-2"><code class="bg-slate-100 text-pink-600 px-1 cursor-pointer" onclick="copyCode(this)">docker build -t img:v1 .</code> <span>Đóng gói code.</span></div>
+                            <div class="flex gap-2"><code class="bg-slate-100 text-pink-600 px-1 cursor-pointer" onclick="copyCode(this)">docker push img:v1</code> <span>Đẩy lên kho lưu trữ.</span></div>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col md:flex-row gap-4 bg-white p-4 border border-slate-200 rounded-lg shadow-sm border-l-4 border-l-orange-400">
+                        <div class="w-full md:w-1/3">
+                            <h3 class="font-bold text-lg text-slate-800">3. AWS CLI & eksctl</h3>
+                            <p class="text-xs text-slate-500 mt-1">Đưa hệ thống lên môi trường Cloud (AWS).</p>
+                        </div>
+                        <div class="w-full md:w-2/3 space-y-2 text-sm text-slate-700">
+                            <div class="flex flex-col mb-2">
+                                <code class="bg-slate-100 text-pink-600 px-1 w-fit mb-1 cursor-pointer" onclick="copyCode(this)">eksctl create cluster --name &lt;name&gt;</code>
+                                <span>Tự động dựng cụm K8s chuẩn doanh nghiệp (đợi 15p).</span>
+                            </div>
+                            <div class="flex flex-col">
+                                <code class="bg-slate-100 text-pink-600 px-1 w-fit mb-1 cursor-pointer" onclick="copyCode(this)">aws eks update-kubeconfig --name &lt;name&gt;</code>
+                                <span>Chuyển "vô lăng" kết nối từ Minikube lên Cloud.</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION: Pro DevOps Tools -->
+            <section id="pro-tools" class="mb-16 scroll-mt-24">
+                <div class="flex items-center gap-3 mb-8 pb-4 border-b border-slate-200">
+                    <span class="bg-red-100 text-red-700 font-bold px-3 py-1 rounded text-sm">Phần 5</span>
+                    <h2 class="text-2xl font-bold text-slate-900">Đồ Nghề DevOps (Phần chìm tảng băng)</h2>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <div class="bg-slate-900 text-slate-300 p-5 rounded-xl">
+                        <h3 class="font-bold text-white mb-3">Lệnh kubectl Chuyên Sâu</h3>
+                        <ul class="space-y-3 text-sm">
+                            <li><code class="text-green-400 cursor-pointer" onclick="copyCode(this)">kubectl explain pod.spec</code><br>📖 Từ điển sống của K8s. In ra tài liệu YAML.</li>
+                            <li><code class="text-green-400 cursor-pointer" onclick="copyCode(this)">kubectl cp &lt;file&gt; &lt;pod&gt;:/path</code><br>📁 Copy file từ máy tính thẳng vào trong Pod.</li>
+                            <li><code class="text-green-400 cursor-pointer" onclick="copyCode(this)">kubectl drain &lt;node&gt;</code><br>⚠️ Đuổi TẤT CẢ Pod sang máy khác để bảo trì.</li>
+                            <li><code class="text-green-400 cursor-pointer" onclick="copyCode(this)">kubectl patch &lt;type&gt; -p '...'</code><br>🩹 Băng bó nhanh, sửa nóng cấu hình.</li>
+                        </ul>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div class="bg-white p-4 border border-slate-200 rounded-lg shadow-sm hover:shadow-md transition">
+                            <h4 class="font-bold text-slate-800">🚀 K9s (Terminal UI)</h4>
+                            <p class="text-sm text-slate-600">Thay vì gõ lệnh mù, K9s cấp giao diện phím tắt trực tiếp trên màn hình đen. Tăng x10 tốc độ làm việc.</p>
+                        </div>
+                        <div class="bg-white p-4 border border-slate-200 rounded-lg shadow-sm hover:shadow-md transition">
+                            <h4 class="font-bold text-slate-800">🧩 Kustomize</h4>
+                            <p class="text-sm text-slate-600">Xếp hình file YAML. Dùng chung 1 base, tự đắp thêm patch riêng cho Dev/Staging/Prod.</p>
+                        </div>
+                        <div class="bg-white p-4 border border-slate-200 rounded-lg shadow-sm hover:shadow-md transition">
+                            <h4 class="font-bold text-slate-800">🔄 kubectx & kubens</h4>
+                            <p class="text-sm text-slate-600">Chuyển đổi nhanh qua lại giữa các Cụm (Clusters) và Môi trường (Namespaces) chỉ với 1 nút bấm.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-blue-50 border-t border-b md:border md:rounded-lg border-blue-200 p-6 text-center">
+                    <h3 class="text-xl font-bold text-blue-900 mb-2">Lộ trình chốt lại</h3>
+                    <p class="text-slate-700">
+                        Docker (Code) 👉 Viết file YAML 👉 Chạy thử trên Minikube 👉 <br class="hidden md:block">
+                        Quản lý bằng Helm/Kustomize 👉 Đưa lên Cloud (AWS/EKS) 👉 Giám sát (Grafana/K9s)
+                    </p>
+                </div>
+            </section>
+
+            <!-- SECTION: Glossary (Từ Điển Thuật Ngữ) -->
+            <section id="glossary" class="mb-16 scroll-mt-24">
+                <div class="flex items-center gap-3 mb-8 pb-4 border-b border-slate-200">
+                    <span class="bg-pink-100 text-pink-700 font-bold px-3 py-1 rounded text-sm">Phần 6</span>
+                    <h2 class="text-2xl font-bold text-slate-900">Từ Điển Thuật Ngữ Tiếng "Người"</h2>
+                </div>
+                
+                <p class="text-slate-600 mb-6 leading-relaxed">
+                    Khi xem các video hướng dẫn, bạn sẽ liên tục gặp các từ khóa tiếng Anh. Dưới đây là giải thích nhanh theo phong cách ví von để bạn hiểu ngay bản chất của chúng.
+                </p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Term Card -->
+                    <div class="bg-white border border-slate-200 rounded-lg p-4 shadow-sm hover:border-pink-300 transition-colors">
+                        <h3 class="font-bold text-lg text-slate-800 border-b border-slate-100 pb-2 mb-2 flex items-center gap-2">
+                            📦 Pod
+                        </h3>
+                        <p class="text-sm text-slate-600"><strong>Ví von: "Căn hộ chung cư"</strong>. Nó chứa các Container (những người sống trong đó). K8s không quản lý Container, chỉ quản lý Pod. Nếu Pod sập, mọi thứ bên trong sập theo.</p>
+                    </div>
+
+                    <!-- Term Card -->
+                    <div class="bg-white border border-slate-200 rounded-lg p-4 shadow-sm hover:border-pink-300 transition-colors">
+                        <h3 class="font-bold text-lg text-slate-800 border-b border-slate-100 pb-2 mb-2 flex items-center gap-2">
+                            🤖 ReplicaSet
+                        </h3>
+                        <p class="text-sm text-slate-600"><strong>Ví von: "Máy photocopy kiêm Bảo vệ"</strong>. Nhận lệnh "Giữ cho tôi 3 Pod". Nó liên tục đếm, nếu 1 Pod "chết", nó sẽ "in" ra ngay 1 Pod mới bù vào để luôn đủ số lượng 3.</p>
+                    </div>
+
+                    <!-- Term Card -->
+                    <div class="bg-white border border-slate-200 rounded-lg p-4 shadow-sm hover:border-pink-300 transition-colors">
+                        <h3 class="font-bold text-lg text-slate-800 border-b border-slate-100 pb-2 mb-2 flex items-center gap-2">
+                            🚀 Deployment
+                        </h3>
+                        <p class="text-sm text-slate-600"><strong>Ví von: "Quản đốc công trình"</strong>. Quản lý ReplicaSet. Khi có tính năng mới, nó chỉ huy việc tạo Pod mới, chạy ổn rồi mới xóa Pod cũ (Rolling Update), giúp người dùng không bị rớt mạng.</p>
+                    </div>
+
+                    <!-- Term Card -->
+                    <div class="bg-white border border-slate-200 rounded-lg p-4 shadow-sm hover:border-pink-300 transition-colors">
+                        <h3 class="font-bold text-lg text-slate-800 border-b border-slate-100 pb-2 mb-2 flex items-center gap-2">
+                            ☎️ Service
+                        </h3>
+                        <p class="text-sm text-slate-600"><strong>Ví von: "Tổng đài viên"</strong>. IP của Pod thay đổi liên tục khi nó tắt/bật. Service giữ 1 IP cố định. Khi khách gọi Service, nó tự động chuyển máy đến đúng Pod đang sống.</p>
+                    </div>
+
+                    <!-- Term Card -->
+                    <div class="bg-white border border-slate-200 rounded-lg p-4 shadow-sm hover:border-pink-300 transition-colors">
+                        <h3 class="font-bold text-lg text-slate-800 border-b border-slate-100 pb-2 mb-2 flex items-center gap-2">
+                            🚪 Ingress
+                        </h3>
+                        <p class="text-sm text-slate-600"><strong>Ví von: "Lễ tân tòa nhà"</strong>. Nơi tiếp nhận mọi người từ Internet (Domain name, HTTPS). Khách vào hỏi "Tôi muốn xem Video", Ingress chỉ đường sang thang máy (Service) Video.</p>
+                    </div>
+
+                    <!-- Term Card -->
+                    <div class="bg-white border border-slate-200 rounded-lg p-4 shadow-sm hover:border-pink-300 transition-colors">
+                        <h3 class="font-bold text-lg text-slate-800 border-b border-slate-100 pb-2 mb-2 flex items-center gap-2">
+                            🗂️ Namespace (NS)
+                        </h3>
+                        <p class="text-sm text-slate-600"><strong>Ví von: "Phân lô đất"</strong>. Chia 1 cụm K8s vật lý thành nhiều cụm ảo. Ví dụ 1 khu cho đội Dev test, 1 khu cho khách hàng thật (Prod) chạy song song không đụng chạm nhau.</p>
+                    </div>
+
+                    <!-- Term Card -->
+                    <div class="bg-white border border-slate-200 rounded-lg p-4 shadow-sm hover:border-pink-300 transition-colors">
+                        <h3 class="font-bold text-lg text-slate-800 border-b border-slate-100 pb-2 mb-2 flex items-center gap-2">
+                            💾 Volume / PV / PVC
+                        </h3>
+                        <p class="text-sm text-slate-600"><strong>Ví von: "Ổ cứng di động (USB)"</strong>. Pod bị xóa là mất hết dữ liệu. Bạn phải cắm cái USB (Volume) này vào Pod. Dù Pod nổ tung, dữ liệu trong USB vẫn còn đó chờ cắm vào Pod mới.</p>
+                    </div>
+
+                    <!-- Term Card -->
+                    <div class="bg-white border border-slate-200 rounded-lg p-4 shadow-sm hover:border-pink-300 transition-colors">
+                        <h3 class="font-bold text-lg text-slate-800 border-b border-slate-100 pb-2 mb-2 flex items-center gap-2">
+                            📝 ConfigMap & Secret
+                        </h3>
+                        <p class="text-sm text-slate-600"><strong>Ví von: "Sổ ghi chú" & "Két sắt"</strong>. ConfigMap lưu các cấu hình dạng chữ (Màu sắc web, URL liên kết...). Secret cũng y hệt nhưng được mã hóa để lưu Mật khẩu, API key.</p>
+                    </div>
+
+                    <!-- Term Card -->
+                    <div class="bg-white border border-slate-200 rounded-lg p-4 shadow-sm hover:border-pink-300 transition-colors">
+                        <h3 class="font-bold text-lg text-slate-800 border-b border-slate-100 pb-2 mb-2 flex items-center gap-2">
+                            📚 StatefulSet
+                        </h3>
+                        <p class="text-sm text-slate-600"><strong>Ví von: "Bản sao có đánh số"</strong>. Trái với Deployment (Pod nào cũng như nhau). StatefulSet tạo ra các Pod có số thứ tự (0,1,2...) và gắn chặt với ổ cứng riêng. Chuyên dùng cho Database (MySQL, MongoDB).</p>
+                    </div>
+
+                    <!-- Term Card -->
+                    <div class="bg-white border border-slate-200 rounded-lg p-4 shadow-sm hover:border-pink-300 transition-colors">
+                        <h3 class="font-bold text-lg text-slate-800 border-b border-slate-100 pb-2 mb-2 flex items-center gap-2">
+                            🕵️ DaemonSet
+                        </h3>
+                        <p class="text-sm text-slate-600"><strong>Ví von: "Điệp viên ngầm"</strong>. Đảm bảo rằng **bất cứ máy chủ vật lý (Node) nào** trong cụm cũng phải chạy ĐÚNG 1 Pod này. Thường dùng cho các tool thu thập log hệ thống.</p>
+                    </div>
+
+                    <!-- Term Card -->
+                    <div class="bg-white border border-slate-200 rounded-lg p-4 shadow-sm hover:border-pink-300 transition-colors">
+                        <h3 class="font-bold text-lg text-slate-800 border-b border-slate-100 pb-2 mb-2 flex items-center gap-2">
+                            ⏱️ Job / CronJob
+                        </h3>
+                        <p class="text-sm text-slate-600"><strong>Ví von: "Công nhân thời vụ"</strong>. K8s bình thường bắt ứng dụng chạy 24/7. Nhưng Job là tạo Pod để làm một việc gì đó (VD: Tính lương tháng), chạy xong thì tự tắt để đỡ tốn điện. CronJob là Job có hẹn giờ.</p>
+                    </div>
+
+                    <!-- Term Card -->
+                    <div class="bg-white border border-slate-200 rounded-lg p-4 shadow-sm hover:border-pink-300 transition-colors">
+                        <h3 class="font-bold text-lg text-slate-800 border-b border-slate-100 pb-2 mb-2 flex items-center gap-2">
+                            🛡️ RBAC
+                        </h3>
+                        <p class="text-sm text-slate-600"><strong>Ví von: "Thẻ từ phân quyền"</strong>. Role-Based Access Control. Là hệ thống chỉ định rõ: Ai (User) được phép làm gì (Xem/Sửa/Xóa) ở khu vực nào (Namespace) trong công trường K8s.</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Custom Notification Toast -->
+    <div id="toast" class="fixed bottom-5 right-5 transform translate-y-20 opacity-0 bg-slate-800 text-white px-4 py-2 rounded shadow-lg transition-all duration-300 z-50 flex items-center gap-2">
+        <svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+        <span>Đã copy lệnh!</span>
+    </div>
+
+    <script>
+        // Copy to clipboard functionality
+        function copyCode(element) {
+            // Find the code element inside the clicked container, or assume the element itself is the code block
+            let codeText = '';
+            if (element.tagName.toLowerCase() === 'code') {
+                codeText = element.innerText;
+            } else {
+                const codeEl = element.querySelector('code');
+                if (codeEl) codeText = codeEl.innerText;
+            }
+
+            if (!codeText) return;
+
+            // Remove square brackets denoting optional args before copying for cleaner usage
+            // (Optional - but good for direct copy pasting)
+            let cleanCode = codeText.replace(/\[.*?\]/g, '').trim();
+
+            // Using modern clipboard API if available, fallback to execCommand
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(cleanCode).then(showToast);
+            } else {
+                // Fallback for older browsers or non-HTTPS
+                const textArea = document.createElement("textarea");
+                textArea.value = cleanCode;
+                textArea.style.position = "fixed";
+                textArea.style.left = "-999999px";
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    showToast();
+                } catch (err) {
+                    console.error('Lỗi copy', err);
+                }
+                textArea.remove();
+            }
+        }
+
+        function showToast() {
+            const toast = document.getElementById('toast');
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 2000);
+        }
+
+        // Simple scroll spy for sidebar highlighting
+        document.addEventListener('DOMContentLoaded', () => {
+            const sections = document.querySelectorAll('section');
+            const navLinks = document.querySelectorAll('.nav-link');
+
+            window.addEventListener('scroll', () => {
+                let current = '';
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    if (scrollY >= sectionTop - 150) {
+                        current = section.getAttribute('id');
+                    }
+                });
+
+                navLinks.forEach(link => {
+                    link.classList.remove('active', 'text-blue-600', 'font-600', 'border-l-blue-600');
+                    if (link.getAttribute('href').includes(current) && current !== '') {
+                        link.classList.add('active', 'text-blue-600', 'font-600');
+                        link.style.borderLeftColor = '#2563eb';
+                    } else {
+                        link.style.borderLeftColor = 'transparent';
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
